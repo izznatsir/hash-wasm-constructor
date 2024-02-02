@@ -3,27 +3,38 @@
     "version": "0.0.0",
     "license": "MIT",
     "author": "Izzuddin Natsir",
+    "files": [
+        "dist",
+        "client.d.ts"
+    ],
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js"
         },
+        "./client": {
+            "types": "./client.d.ts"
+        },
         "./workerd": {
             "types": "./dist/workerd/index.d.ts",
             "workerd": "./dist/workerd/index.js"
-        }
+        },
+        "./*.wasm": "./dist/wasm/*.wasm",
+        "./*.wasm.json": "./dist/wasm/*.wasm.json",
+        "./*.wasm.txt": "./dist/wasm/*.wasm.txt"
     },
     "type": "module",
     "scripts": {
-        "build": "tsup",
+        "build": "sh -c ./scripts/build.sh",
         "format": "biome format --no-errors-on-unmatched --write .",
+        "lint": "biome lint --apply .",
         "test": "vitest run",
         "prepare": "husky install"
     },
     "devDependencies": {
         "@biomejs/biome": "1.5.3",
         "@types/node": "^20.11.16",
-        "husky": "^8.0.0",
+        "husky": "^9.0.0",
         "lint-staged": "^15.2.1",
         "tsup": "^8.0.1",
         "typescript": "^5.3.3",

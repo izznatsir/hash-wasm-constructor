@@ -12,7 +12,7 @@ devDependencies:
     specifier: ^20.11.16
     version: 20.11.16
   husky:
-    specifier: ^9.0.10
+    specifier: ^9.0.0
     version: 9.0.10
   lint-staged:
     specifier: ^15.2.1
