@@ -1,0 +1,3 @@
+class Hasher {}
+
+export { Hasher };
