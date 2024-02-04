@@ -1,43 +1,102 @@
-interface HasherConstructorArgs {
-	wasm: WebAssembly.Instance | WebAssembly.Module;
+interface CreateHasherArgs {
+	/**
+	 * Hasher WebAssembly instance or module.
+	 */
+	binary: WebAssembly.Instance | WebAssembly.Module;
+	/**
+	 * Hash length in bytes.
+	 */
+	length: number;
+	/**
+	 * Initial hasher memory size in bytes.
+	 */
+	initialMemorySize?: number;
 }
 
-class Hasher {
-	#wasm_promise: PromiseLike<WebAssembly.Instance>;
+interface HasherWasmExports {
+	Hash_GetBuffer(): number;
+	Hash_SetMemorySize(size: number): number;
+	memory: {
+		buffer: Uint8Array;
+	};
+}
 
-	blockSize = 0;
+async function createHasher({
+	binary,
+	length,
+	initialMemorySize,
+}: CreateHasherArgs) {
+	let instance =
+		binary instanceof WebAssembly.Instance
+			? binary
+			: await WebAssembly.instantiate(binary);
+	let exports = instance.exports as unknown as HasherWasmExports;
 
-	digestSize = 0;
+	let memory: Uint8Array;
 
-	hashLength = 0;
+	setMemory(initialMemorySize);
 
-	constructor({ wasm }: HasherConstructorArgs) {
-		if (wasm instanceof WebAssembly.Instance) {
-			this.#wasm_promise = Promise.resolve(wasm);
-		} else {
-			this.#wasm_promise = WebAssembly.instantiate(wasm);
-		}
+	// TODO: Implement get_state_size
+	function get_state_size() {}
+
+	// TODO: Implement is_data_short
+	function is_data_short() {}
+
+	// TODO: Implement update_memory
+	function update_memory() {}
+
+	function getExports() {
+		return exports;
 	}
 
-	calculate() {}
+	function getMemory() {
+		return memory;
+	}
 
-	digest() {}
+	function setMemory(size?: number) {
+		if (size !== undefined) exports.Hash_SetMemorySize(size);
 
-	getExports() {}
+		let offset = exports.Hash_GetBuffer();
+		let buffer = exports.memory.buffer;
 
-	getMemory() {}
+		memory = new Uint8Array(buffer, offset, size);
+	}
 
-	init() {}
+	function writeMemory(buffer: Uint8Array, offset?: number) {
+		memory.set(buffer, offset);
+	}
 
-	load() {}
+	// TODO: Implement init
+	function init() {}
 
-	save() {}
+	// TODO: Implement update
+	function update() {}
 
-	setMemorySize() {}
+	// TODO: Implement digest
+	function digest() {}
 
-	update() {}
+	// TODO: Implement save
+	function save() {}
 
-	writeMemory() {}
+	// TODO: Implement load
+	function load() {}
+
+	// TODO: Implement calculate
+	function calculate() {}
+
+	return {
+		calculate,
+		digest,
+		getExports,
+		getMemory,
+		length,
+		init,
+		load,
+		save,
+		setMemory,
+		update,
+		writeMemory,
+	};
 }
 
-export { Hasher };
+export { createHasher };
